@@ -19,8 +19,9 @@
 
 ```markdown 
 usage: FastjsonScan
-    --bypass      Enable bypass mode
- -u,--url <arg>   Specify the URL (required)
+--bypass         Enable bypass mode
+-h,--header <arg>   Custom request header
+-u,--url <arg>      Specify the URL (required)
 ```
 
 
@@ -29,11 +30,6 @@ usage: FastjsonScan
 ![](image/image0.png)
 
 ![](image/image1.png)
-
-## 扩展性
-
-通过在config.yml的payloadModule.DetectVersionByDnsLog中可添加额外模块可以探测payload是否成功命中，其中${dnslog}为模版参数
-![](image/image2.png)
 
 ## 参考
 
