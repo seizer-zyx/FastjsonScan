@@ -46,4 +46,5 @@ usage: FastjsonScan
 ## 许可证
 
 版权所有 © 2025 [GG Bond](https://github.com/seizer-zyx/FastjsonScan "GG Bond")。
+
 该项目已获得[MIT](https://github.com/seizer-zyx/FastjsonScan/blob/main/LICENSE "MIT")许可。
