@@ -6,7 +6,7 @@
 
     <groupId>com.seizer.vul</groupId>
     <artifactId>FastjsonScan</artifactId>
-    <version>1.0</version>
+    <version>1.0.1</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

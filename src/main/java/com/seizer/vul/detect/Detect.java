@@ -8,10 +8,7 @@ import com.seizer.vul.util.YamlReader;
 import okhttp3.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +33,8 @@ public class Detect implements DetectInterface{
             .readTimeout(30, TimeUnit.SECONDS)
             .build();
 
+    public Map<String, String> headers = new HashMap<>();
+
     public Detect(String targetUrl, Boolean bypass) {
         this.targetUrl = targetUrl;
         this.bypass = bypass;
@@ -56,6 +55,14 @@ public class Detect implements DetectInterface{
 
     public Detect(String targetUrl) {
         this(targetUrl, false);
+    }
+
+    public void setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+    }
+
+    public void addHeader(String name, String value) {
+        this.headers.put(name, value);
     }
 
     public String getTargetUrl() {
@@ -83,12 +90,18 @@ public class Detect implements DetectInterface{
 
         RequestBody requestBody = RequestBody.create(payload, MediaType.parse("application/json"));
 
-        Request request = new Request.Builder().
-                url(targetUrl)
+        Request.Builder requestBuilder = new Request.Builder()
+                .url(targetUrl)
                 .post(requestBody)
                 .addHeader("User-Agent", userAgent)
-                .addHeader("Accept", "*/*")
-                .build();
+                .addHeader("Accept", "*/*");
+
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            requestBuilder.addHeader(entry.getKey(), entry.getValue());
+        }
+
+        Request request = requestBuilder.build();
+
 
         Response response = null;
         try {
