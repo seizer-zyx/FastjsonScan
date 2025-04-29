@@ -13,6 +13,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.seizer.vul.util.GlobalVar.createUnsafeSSLSocketFactory;
+import static com.seizer.vul.util.GlobalVar.createUnsafeTrustManager;
+
 
 public class Detect implements DetectInterface{
 
@@ -31,6 +34,8 @@ public class Detect implements DetectInterface{
             .followRedirects(false)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)
+            .sslSocketFactory(createUnsafeSSLSocketFactory(), createUnsafeTrustManager())
+            .hostnameVerifier((hostname, session) -> true)
             .build();
 
     public Map<String, String> headers = new HashMap<>();
