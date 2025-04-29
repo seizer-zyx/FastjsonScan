@@ -33,4 +33,11 @@ public interface DetectInterface {
      * return Boolean
      */
     Boolean DetectDnsLog();
+
+    /**
+     * 延时检测
+     * return Boolean
+     */
+    Boolean DetectDelay();
+
 }

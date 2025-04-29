@@ -66,6 +66,8 @@ public class Main {
             if (detectResult.version == null) {
                 detect.DetectVersion();
             }
+        } else {
+            detect.DetectDelay();
         }
         if (errResponse) {
             detect.DetectDependency();

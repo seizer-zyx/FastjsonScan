@@ -14,7 +14,7 @@ public class GlobalVar {
 
     final public static String DNSLOG_MODULE = "payloadModule.DetectDnsLog";
 
-    final public static String DELAY_MODULE = "payloadModule.DetectDnsLog";
+    final public static String DELAY_MODULE = "payloadModule.DetectDelay";
 
     final public static String AUTOTYPE_MODULE = "payloadModule.DetectAutoType";
 

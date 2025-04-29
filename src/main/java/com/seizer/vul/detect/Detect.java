@@ -8,6 +8,7 @@ import com.seizer.vul.util.YamlReader;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.net.SocketTimeoutException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -33,7 +34,7 @@ public class Detect implements DetectInterface{
     final static private OkHttpClient httpClient = new OkHttpClient.Builder()
             .followRedirects(false)
             .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
             .sslSocketFactory(createUnsafeSSLSocketFactory(), createUnsafeTrustManager())
             .hostnameVerifier((hostname, session) -> true)
             .build();
@@ -90,7 +91,7 @@ public class Detect implements DetectInterface{
         return detectResult;
     }
 
-    private Response sendPayload(String payload) {
+    private Response sendPayload(String payload) throws SocketTimeoutException {
         String userAgent = "Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36";
 
         RequestBody requestBody = RequestBody.create(payload, MediaType.parse("application/json"));
@@ -111,6 +112,8 @@ public class Detect implements DetectInterface{
         Response response = null;
         try {
             response = httpClient.newCall(request).execute();
+        } catch (SocketTimeoutException e){
+            throw new SocketTimeoutException();
         } catch (IOException e) {
             System.out.println("请求目标地址失败！");
             throw new RuntimeException(e);
@@ -154,7 +157,7 @@ public class Detect implements DetectInterface{
                 throw new RuntimeException(e);
             }
         }
-        detectResult.setVulExist(vulExist);
+        detectResult.setErrExist(vulExist);
         detectResult.setErrResponse(errResponse);
         return errResponse;
     }
@@ -182,7 +185,11 @@ public class Detect implements DetectInterface{
             if (isBypass()) {
                 payload = new UnicodeBypass().transform(payload);
             }
-            sendPayload(payload);
+            try {
+                sendPayload(payload);
+            } catch (SocketTimeoutException e) {
+                throw new RuntimeException(e);
+            }
         }
         String dnsLogRecord = dnsLogProvider.getDnsLogRecord();
         if (!dnsLogRecord.equals("[]")) {
@@ -230,7 +237,11 @@ public class Detect implements DetectInterface{
             if (isBypass()) {
                 payload = new UnicodeBypass().transform(payload);
             }
-            sendPayload(payload);
+            try {
+                sendPayload(payload);
+            } catch (SocketTimeoutException e) {
+                throw new RuntimeException(e);
+            }
         }
         String dnsLogRecord = dnsLogProvider.getDnsLogRecord();
         boolean autoType = !dnsLogRecord.equals("[]");
@@ -249,7 +260,11 @@ public class Detect implements DetectInterface{
             if (isBypass()) {
                 payload = new UnicodeBypass().transform(payload);
             }
-            sendPayload(payload);
+            try {
+                sendPayload(payload);
+            } catch (SocketTimeoutException e) {
+                throw new RuntimeException(e);
+            }
         }
         String dnsLogRecord = dnsLogProvider.getDnsLogRecord();
         boolean outNetwork = !dnsLogRecord.equals("[]");
@@ -257,11 +272,32 @@ public class Detect implements DetectInterface{
         return outNetwork;
     }
 
+    @Override
+    public Boolean DetectDelay() {
+        ArrayList<String> payloads = getPayloads(GlobalVar.DELAY_MODULE);
+        for (String payloadTem : payloads) {
+            HashMap<String, String> params = new HashMap<>();
+            params.put("value", new String(new char[20]).replace("\0", "a"));
+            String payload = PayloadFactory.loadTemplate(payloadTem, params);
+            if (isBypass()) {
+                payload = new UnicodeBypass().transform(payload);
+            }
+            try {
+                sendPayload(payload);
+            } catch (SocketTimeoutException e) {
+                detectResult.setDelayExist(true);
+                return true;
+            }
+        }
+        detectResult.setDelayExist(false);
+        return false;
+    }
 
     public static class DetectResult {
         public String url;
         public Boolean bypass;
-        public Boolean vulExist;
+        public Boolean errExist;
+        public Boolean delayExist;
         public String version;
         public Boolean autoType;
         public Boolean outNetwork;
@@ -273,9 +309,11 @@ public class Detect implements DetectInterface{
             this.bypass = bypass;
         }
 
-        public void setVulExist(Boolean vulExist) {
-            this.vulExist = vulExist;
+        public void setErrExist(Boolean errExist) {
+            this.errExist = errExist;
         }
+
+        public void setDelayExist(Boolean delayExist) {this.delayExist = delayExist;}
 
         public void setVersion(String version) {
             this.version = version;
@@ -303,11 +341,12 @@ public class Detect implements DetectInterface{
                     "Target: %s\n" +
                     "Bypass: %s\n" +
                     "[+] 报错检测: %s\n" +
+                    "[+] 延时检测: %s\n" +
                     "[+] 报错回显: %s\n" +
                     "[+] Fastjson 版本: %s\n" +
                     "[+] 网络状态判断: %s\n" +
                     "[+] AutoType 状态: %s\n" +
-                    "[+] 依赖库信息:\n", url, bypass, vulExist, errResponse, version, outNetwork, autoType));
+                    "[+] 依赖库信息:\n", url, bypass, errExist, delayExist, errResponse, version, outNetwork, autoType));
             if (dependencyList != null) {
                 for (String dependency : dependencyList) {
                     result.append(String.format("%s\n", dependency));
